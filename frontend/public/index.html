@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microlearning Service</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <h1>Welcome to Microlearning Service</h1>
+        <div id="login-section">
+            <h2>Login</h2>
+            <form id="login-form">
+                <input type="text" id="username" placeholder="Username" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+
+        <div id="courses-section" style="display: none;">
+            <h2>Courses</h2>
+            <ul id="course-list"></ul>
+
+            <h3>Add a New Course</h3>
+            <form id="add-course-form">
+                <input type="text" id="course-title" placeholder="Course Title" required>
+                <textarea id="course-description" placeholder="Course Description" required></textarea>
+                <button type="submit">Add Course</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
