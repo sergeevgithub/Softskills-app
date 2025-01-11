@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const password = document.getElementById("password").value;
 
         try {
-            const response = await fetch("http://localhost:5000/login", {
+            const response = await fetch("http://localhost:5000/shit", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -30,12 +30,14 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             const data = await response.json();
-            token = data.access_token;
+            alert(data)
+            window.location = "/style.css"
+            //token = data.access_token;
 
             // Show courses section
             loginSection.style.display = "none";
             coursesSection.style.display = "block";
-            fetchCourses();
+            //fetchCourses();
         } catch (error) {
             console.error("Login error:", error);
             alert("An error occurred during login.");

@@ -1,10 +1,9 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, redirect
 from flask_jwt_extended import jwt_required, create_access_token
-from .models import User, Course
-from .schemas import user_schema, course_schema, courses_schema
-from . import db, bcrypt
+from flask import send_from_directory
 
 routes = Blueprint('routes', __name__)
+
 
 @routes.route('/register', methods=['POST'])
 def register():
@@ -14,24 +13,35 @@ def register():
     if not username or not password:
         return jsonify({'message': 'Username and password are required'}), 400
 
-    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-    new_user = User(username=username, password=hashed_password)
-    db.session.add(new_user)
-    db.session.commit()
+    # hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+    # new_user = User(username=username, password=hashed_password)
+    # db.session.add(new_user)
+    # db.session.commit()
 
     return user_schema.jsonify(new_user), 201
 
-@routes.route('/login', methods=['POST'])
+@routes.route('/<path:path>', methods=['GET'])
+def static(path):
+    return send_from_directory('../frontend/public', path)
+
+@routes.route('/shit', methods=['POST'])
+def shit():
+    return jsonify("Fuck you")
+
+@routes.route('/')
+@routes.route('/login', methods=['GET'])
 def login():
-    username = request.json.get('username')
-    password = request.json.get('password')
+    # username = request.json.get('username')
+    # password = request.json.get('password')
+    #
+    # user = User.query.filter_by(username=username).first()
+    # if user and bcrypt.check_password_hash(user.password, password):
+    #     access_token = create_access_token(identity={'id': user.id, 'username': user.username})
+    #     return jsonify({'access_token': access_token}), 200
+    #
+    # return jsonify({'message': 'Invalid credentials'}), 401
+    return redirect('/index.html')
 
-    user = User.query.filter_by(username=username).first()
-    if user and bcrypt.check_password_hash(user.password, password):
-        access_token = create_access_token(identity={'id': user.id, 'username': user.username})
-        return jsonify({'access_token': access_token}), 200
-
-    return jsonify({'message': 'Invalid credentials'}), 401
 
 @routes.route('/courses', methods=['GET'])
 @jwt_required()
