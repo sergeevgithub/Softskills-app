@@ -1,9 +1,9 @@
 /* General styles */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f9;
+    background-color: #f9fbf7; /* Soft mint green background */
     color: #333;
     display: flex;
     justify-content: center;
@@ -12,68 +12,200 @@ body {
 }
 
 h1 {
-    color: #4CAF50;
+    color: #2b7a4b; /* Rich green */
     text-align: center;
+    font-size: 2.4rem;
+    margin-bottom: 20px;
 }
 
 h2 {
-    color: #333;
-    border-bottom: 2px solid #4CAF50;
+    color: #2b7a4b;
+    border-bottom: 2px solid #2b7a4b;
     padding-bottom: 5px;
     margin-bottom: 15px;
+    font-size: 1.6rem;
 }
 
 /* Container styles */
-#app {
-    background: #fff;
+#app, #study-plan-container, #theory-container {
+    background: #ffffff; /* White for clarity */
     padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 500px;
+    max-width: 600px;
+    margin: 10px 0;
 }
 
 /* Form styles */
 form {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
 }
 
 input, textarea, button {
-    padding: 10px;
+    padding: 12px;
     font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    border: 1px solid #91c5a8; /* Subtle border */
+    border-radius: 6px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 input:focus, textarea:focus {
-    border-color: #4CAF50;
+    border-color: #2b7a4b;
     outline: none;
+    box-shadow: 0 0 6px rgba(43, 122, 75, 0.4);
 }
 
 button {
-    background-color: #4CAF50;
-    color: #fff;
+    background-color: #2b7a4b;
+    color: #ffffff;
     border: none;
+    border-radius: 6px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-weight: bold;
+    padding: 12px 16px;
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: #256a40;
+    transform: translateY(-1px);
 }
 
-/* Course list styles */
-#course-list {
-    list-style-type: none;
+/* Study Section Styles */
+.study-section {
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 16px;
+    border: 1px solid #a2d4b4;
+    background-color: #edf7f0; /* Light mint green */
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    color: #3d7c58;
+    cursor: pointer;
+}
+
+.study-section.unavailable {
+    background-color: #eaeaea; /* Gray */
+    color: #999;
+    cursor: allowed;
+}
+
+.study-section:hover.available {
+    background-color: #d3ebdd;
+    transform: scale(1.02);
+}
+
+.study-section.unavailable:hover {
+    transform: none; /* Prevent hover effect on unavailable sections */
+}
+
+/* Day Plan Section */
+.field {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 16px;
+    background-color: #73a885; /* Softer green */
+    color: #ffffff;
+    font-weight: bold;
+    cursor: pointer;
+    border: 1px solid #a2d4b4;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.field:hover {
+    background-color: #5f8e72; /* Slightly darker hover */
+    transform: scale(1.02);
+}
+
+.field:first-child {
+    background-color: #256a40; /* Highlighted field */
+    border-color: #2b7a4b;
+}
+
+#theory-container {
+    padding: 5px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 20px 0;
+}
+
+/* Question and Answer Styles */
+ul.choices {
+    list-style: none;
     padding: 0;
 }
 
-#course-list li {
-    background: #f9f9f9;
-    padding: 10px;
+li.choice {
+    padding: 12px;
     border: 1px solid #ddd;
-    border-radius: 4px;
-    margin-bottom: 10px;
+    margin: 5px 0;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    background-color: #fff; /* Default white background */
+    color: #3d7c58; /* Subtle dark green */
+}
+
+li.choice:hover {
+    background-color: rgba(217, 239, 227, 0.7); /* Soft green hover with transparency */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Correct Answer */
+li.correct {
+    background-color: #c8e6c9; /* Green for correct answers */
+    border-color: #81c784;
+}
+
+li.correct:hover {
+    background-color: #a5d6a7; /* Slightly darker green when hovered */
+    box-shadow: 0 2px 6px rgba(129, 199, 132, 0.5); /* Greenish shadow */
+}
+
+/* Incorrect Answer */
+li.incorrect {
+    background-color: #ffcdd2; /* Red for incorrect answers */
+    border-color: #e57373;
+}
+
+li.incorrect:hover {
+    background-color: #ef9a9a; /* Slightly darker red when hovered */
+    box-shadow: 0 2px 6px rgba(229, 115, 115, 0.5); /* Reddish shadow */
+}
+
+/* Disabled button styles */
+button:disabled {
+    background-color: #ccc;
+    cursor: default;
+}
+
+
+/* Footer */
+footer {
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+    margin-top: 20px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    #app, #study-plan-container, #theory-container {
+        width: 90%;
+    }
+
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    button {
+        font-size: 14px;
+    }
 }

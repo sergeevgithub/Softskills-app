@@ -16,7 +16,7 @@
 //};
 
 document.addEventListener('DOMContentLoaded', async () => {
-    localStorage.setItem('token', 'amoma')
+    localStorage.setItem('token', 'amoma') // Token here!
     const token = localStorage.getItem('token');
 
     if (!token) {
@@ -42,7 +42,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (section.available) {
                 sectionDiv.addEventListener('click', () => {
-                    alert(`You selected: ${section.topic}`);
+                    localStorage.setItem('day_number', 1);
+
                     window.location.href = 'day_plan.html';
                 });
             }
