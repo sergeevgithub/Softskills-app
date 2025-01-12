@@ -72,7 +72,7 @@ def get_day_plan():
 @routes.route('/theory', methods=['POST'])
 def get_theory():
     day = request.json.get('day_number')
-    print(day)
+    # print(day)
     # day = request.json.get('day_number')
     # course_id = request.json.get('course_id')
     #
@@ -182,7 +182,7 @@ def get_theory():
 @routes.route('/activity', methods=['POST'])
 def get_activity():
     day = request.json.get('day_number')
-    print('activity', day)
+    # print('activity', day)
     # day = request.json.get('day_number')
     # course_id = request.json.get('course_id')
     # number_act = request.json.get('number_act')
