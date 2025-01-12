@@ -136,16 +136,16 @@ def get_study_plan():
 
 @routes.route('/day_plan')
 def get_day_plan():
-    day = request.json.get('day')
+    day = request.json.get('day_number')
     course_id = request.json.get('course_id')
 
     if not day or not course_id:
-        return jsonify({'message': 'Course id and day are required'}), 400
+        return jsonify({'message': 'Course id and day are required', 'activities_number': 3}), 400
 
     connection = get_db_connection('courses_db')
 
     if not connection:
-        return jsonify({'message': 'Database connection failed'}), 503
+        return jsonify({'message': 'Database connection failed', 'activities_number': 3}), 503
 
     cursor = connection.cursor(dictionary=True)
 
@@ -167,90 +167,209 @@ def get_day_plan():
     if activities:
         return jsonify({'message': 'There are some activities', 'activities_number': len(activities)}), 201
 
-    return jsonify({'message': 'No activities', 'activities_number': 0}), 401
+    return jsonify({'message': 'No activities', 'activities_number': 3}), 401
 
 @routes.route('/theory')
 def get_theory():
-    day = request.json.get('day')
-    course_id = request.json.get('course_id')
-
-    if not day or not course_id:
-        return jsonify({'message': 'Course id and day are required'}), 400
-
-    connection = get_db_connection('courses_db')
-
-    if not connection:
-        return jsonify({'message': 'Database connection failed'}), 503
-
-    cursor = connection.cursor(dictionary=True)
-
-    try:
-        table_name = 'study_plan'
-        cursor.execute(f'SELECT * FROM {table_name} WHERE (course_id = ? AND day = ?)', (course_id, day))
-        sp_id = cursor.fetchone()['id']
-
-        table_name = 'theories'
-        cursor.execute(f'SELECT * FROM {table_name} WHERE sp_id = ?', (sp_id))
-        theory_content = cursor.fetchone()['body']
-    except mariadb.Error as e:
-        print(f"Error querying database: {e}")
-        theory_content = None
-    finally:
-        cursor.close()
-        connection.close()
-
-    if theory_content:
-        return jsonify({'message': 'There are some theory', 'content': theory_content}), 201
-
-    return jsonify({'message': 'No content'}), 401
+    # day = request.json.get('day_number')
+    # course_id = request.json.get('course_id')
+    #
+    # if not day or not course_id:
+    #     return jsonify({'message': 'Course id and day are required', 'content': ''}), 400
+    #
+    # connection = get_db_connection('courses_db')
+    #
+    # if not connection:
+    #     return jsonify({'message': 'Database connection failed', 'content': ''}), 503
+    #
+    # cursor = connection.cursor(dictionary=True)
+    #
+    # try:
+    #     table_name = 'study_plan'
+    #     cursor.execute(f'SELECT * FROM {table_name} WHERE (course_id = ? AND day = ?)', (course_id, day))
+    #     sp_id = cursor.fetchone()['id']
+    #
+    #     table_name = 'theories'
+    #     cursor.execute(f'SELECT * FROM {table_name} WHERE sp_id = ?', (sp_id))
+    #     theory_content = cursor.fetchone()['body']
+    # except mariadb.Error as e:
+    #     print(f"Error querying database: {e}")
+    #     theory_content = None
+    # finally:
+    #     cursor.close()
+    #     connection.close()
+    #
+    # if theory_content:
+    #     return jsonify({'message': 'There are some theory', 'content': theory_content}), 201
+    #
+    # return jsonify({'message': 'No content', 'content': ''}), 401
+    return jsonify(
+        {
+            "coreConcept": "Conflict happens naturally in life. It’s when people, groups, or even a person within themselves have disagreements, tensions, or don’t see things the same way.",
+            "typesOfConflicts": [
+                {
+                    "type": "Interpersonal Conflicts",
+                    "description": "Conflicts between two or more people.",
+                    "causes": [
+                        "Different ways of communicating",
+                        "Different personal goals",
+                        "Different expectations",
+                        "Different values"
+                    ]
+                },
+                {
+                    "type": "Intrapersonal Conflicts",
+                    "description": "Conflicts that happen inside yourself.",
+                    "involves": [
+                        "Struggles with personal values",
+                        "Having a hard time making decisions",
+                        "Feeling torn between emotions and logical thinking"
+                    ]
+                },
+                {
+                    "type": "Organizational Conflicts",
+                    "description": "Conflicts that happen at work or in an organization.",
+                    "triggers": [
+                        "Fighting over resources",
+                        "Not being clear about roles",
+                        "Changes in the organization",
+                        "Pressure to perform well"
+                    ]
+                },
+                {
+                    "type": "Structural Conflicts",
+                    "description": "Conflicts caused by how an organization is set up.",
+                    "characteristics": [
+                        "Barriers between levels of management",
+                        "Problems with communication",
+                        "Strict or slow processes"
+                    ]
+                },
+                {
+                    "type": "Value-Based Conflicts",
+                    "description": "Conflicts caused by differences in beliefs or values.",
+                    "involves": [
+                        "Disagreeing on ethics or morals",
+                        "Different cultural perspectives",
+                        "Conflicts over ideologies"
+                    ]
+                }
+            ],
+            "conflictDynamics": {
+                "constructiveConflicts": {
+                    "description": "Conflicts that lead to positive outcomes.",
+                    "benefits": [
+                        "Help people understand each other better",
+                        "Encourage new ideas and solutions",
+                        "Bring about positive change"
+                    ]
+                },
+                "destructiveConflicts": {
+                    "description": "Conflicts that lead to negative outcomes.",
+                    "effects": [
+                        "Create bad feelings",
+                        "Stop people from solving problems",
+                        "Hurt relationships"
+                    ]
+                }
+            }
+        }
+    )
 
 @routes.route('/activity')
-def get_theory():
-    day = request.json.get('day')
-    course_id = request.json.get('course_id')
-    number_act = request.json.get('number_act')
-
-    if not day or not course_id or not number_act:
-        return jsonify({'message': 'Course id, activities number and day are required'}), 400
-
-    connection = get_db_connection('courses_db')
-
-    if not connection:
-        return jsonify({'message': 'Database connection failed'}), 503
-
-    cursor = connection.cursor(dictionary=True)
-
-    try:
-        table_name = 'study_plan'
-        cursor.execute(f'SELECT * FROM {table_name} WHERE (course_id = ? AND day = ?)', (course_id, day))
-        sp_id = cursor.fetchone()['id']
-
-        table_name = 'activities'
-        cursor.execute(f'SELECT * FROM {table_name} WHERE (sp_id = ? and number = ?)', (sp_id, number_act))
-        activities_content = cursor.fetchone()['body']
-    except mariadb.Error as e:
-        print(f"Error querying database: {e}")
-        activities_content = None
-    finally:
-        cursor.close()
-        connection.close()
-
-    if activities_content:
-        return jsonify({'message': 'There are some activities', 'content': activities_content}), 201
-
-    return jsonify({'message': 'No content'}), 401
-#     return jsonify(
-#         {'test_1': [{'question': 'aaaaaaaaaaaaaaaaaaaaa',
-#                      'choices': ['aaa', 'bbb', 'ccc'],
-#                      'right_choices': 0}],
-#          'test_2': [{'question': 'bbbbbbbb',
-#                      'choices': ['qwe', 'asd', 'zxc'],
-#                      'right_choices': 2}],
-#          'test_3': [{'question': 'bbbbbbbb',
-#                      'choices': ['qwe', 'asd', 'zxc'],
-#                     'right_choices': 2}
-#                    ]
-#         })
+def get_activity():
+    # day = request.json.get('day_number')
+    # course_id = request.json.get('course_id')
+    # number_act = request.json.get('number_act')
+    #
+    # if not day or not course_id or not number_act:
+    #     return jsonify({'message': 'Course id, activities number and day are required', 'content': ''}), 400
+    #
+    # connection = get_db_connection('courses_db')
+    #
+    # if not connection:
+    #     return jsonify({'message': 'Database connection failed', 'content': ''}), 503
+    #
+    # cursor = connection.cursor(dictionary=True)
+    #
+    # try:
+    #     table_name = 'study_plan'
+    #     cursor.execute(f'SELECT * FROM {table_name} WHERE (course_id = ? AND day = ?)', (course_id, day))
+    #     sp_id = cursor.fetchone()['id']
+    #
+    #     table_name = 'activities'
+    #     cursor.execute(f'SELECT * FROM {table_name} WHERE (sp_id = ? and number = ?)', (sp_id, number_act))
+    #     activities_content = cursor.fetchone()['body']
+    # except mariadb.Error as e:
+    #     print(f"Error querying database: {e}")
+    #     activities_content = None
+    # finally:
+    #     cursor.close()
+    #     connection.close()
+    #
+    # if activities_content:
+    #     return jsonify({'message': 'There are som e activities', 'content': activities_content}), 201
+    #
+    # return jsonify({'message': 'No content', 'content': ''}), 401
+    return jsonify(
+        {
+            "test_1": [
+                {
+                    "question": "Two software developers disagree on whether to use a JavaScript framework or a native approach for building a web application.",
+                    "choices": ["Interpersonal Conflict", "Intrapersonal Conflict", "Organizational Conflict",
+                                "Structural Conflict", "Value-Based Conflict"],
+                    "right_choices": 0
+                }
+            ],
+            "test_2": [
+                {
+                    "question": "An engineer faces a dilemma between taking a lucrative job offer in a high-tech industry or continuing to work on a startup with a passion for renewable energy.",
+                    "choices": ["Interpersonal Conflict", "Intrapersonal Conflict", "Organizational Conflict",
+                                "Structural Conflict", "Value-Based Conflict"],
+                    "right_choices": 1
+                }
+            ],
+            "test_3": [
+                {
+                    "question": "A university's engineering department is reorganized, leading to confusion about new roles and responsibilities within the team.",
+                    "choices": ["Interpersonal Conflict", "Intrapersonal Conflict", "Organizational Conflict",
+                                "Structural Conflict", "Value-Based Conflict"],
+                    "right_choices": 3
+                }
+            ],
+            "test_4": [
+                {
+                    "question": "A team of researchers with different cultural backgrounds struggles to agree on how to design their experiment.",
+                    "choices": ["Interpersonal Conflict", "Intrapersonal Conflict", "Organizational Conflict",
+                                "Structural Conflict", "Value-Based Conflict"],
+                    "right_choices": 4
+                }
+            ],
+            "test_5": [
+                {
+                    "question": "A project manager needs to decide whether to prioritize a technical feature or focus on user experience for an upcoming product launch.",
+                    "choices": ["Interpersonal Conflict", "Intrapersonal Conflict", "Organizational Conflict",
+                                "Structural Conflict", "Value-Based Conflict"],
+                    "right_choices": 1
+                }
+            ],
+            "test_6": [
+                {
+                    "question": "Two team members in a robotics club argue over the allocation of project resources, each believing their approach is more efficient.",
+                    "choices": ["Interpersonal Conflict", "Intrapersonal Conflict", "Organizational Conflict",
+                                "Structural Conflict", "Value-Based Conflict"],
+                    "right_choices": 0
+                }
+            ],
+            "test_7": [
+                {
+                    "question": "A large tech company faces disagreements among top-level executives about the company's future direction, especially regarding artificial intelligence versus traditional computing.",
+                    "choices": ["Interpersonal Conflict", "Intrapersonal Conflict", "Organizational Conflict",
+                                "Structural Conflict", "Value-Based Conflict"],
+                    "right_choices": 2
+                }
+            ]
+        })
 
 # @routes.route('/get_courses', methods=['POST'])
 # def get_courses():
