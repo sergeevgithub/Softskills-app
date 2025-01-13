@@ -27,7 +27,7 @@ h2 {
 }
 
 /* Container styles */
-#app, #study-plan-container, #theory-container {
+#app, #theory-container {
     background: #ffffff; /* White for clarity */
     padding: 20px;
     border-radius: 12px;
@@ -75,6 +75,18 @@ button:hover {
 }
 
 /* Study Section Styles */
+#study-plan-container {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 450px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin: 10px 0;
+}
 .study-section {
     padding: 15px;
     border-radius: 8px;
