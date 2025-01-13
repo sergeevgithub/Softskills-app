@@ -1,38 +1,121 @@
-from flask import Blueprint, jsonify, request, send_from_directory
-# from .models import User, Course
-# from .schemas import user_schema, course_schema, courses_schema
-# from . import db, bcrypt
+from flask import Blueprint, jsonify, request, redirect
+from flask_jwt_extended import jwt_required, create_access_token
+from flask import send_from_directory
+import re
+import bcrypt
+
+import mariadb
 
 routes = Blueprint('routes', __name__)
 
 
-# @routes.route('/register', methods=['POST'])
-# def register():
-#     username = request.json.get('username')
-#     password = request.json.get('password')
-#
-#     if not username or not password:
-#         return jsonify({'message': 'Username and password are required'}), 400
-#
-#     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-#     new_user = User(username=username, password=hashed_password)
-#     db.session.add(new_user)
-#     db.session.commit()
-#
-#     return user_schema.jsonify(new_user), 201
+# Helper function to connect to MariaDB
+def get_db_connection(database='users_db',
+                      user='guest',
+                      password='12345',
+                      host='localhost',
+                      port=3306):
+    DB_CONFIG = {
+        'host': host,
+        'port': port,
+        'user': user,
+        'password': password,
+        'database': database
+    }
+
+    try:
+        connection = mariadb.connect(**DB_CONFIG)
+        return connection
+    except mariadb.Error as e:
+        print(f"Error connecting to MariaDB: {e}")
+        return None
 
 
-# @routes.route('/login', methods=['POST'])
-# def login():
-#     username = request.json.get('username')
-#     password = request.json.get('password')
-#
-#     user = User.query.filter_by(username=username).first()
-#     if user and bcrypt.check_password_hash(user.password, password):
-#         access_token = create_access_token(identity={'id': user.id, 'username': user.username})
-#         return jsonify({'access_token': access_token}), 200
-#
-#     return jsonify({'message': 'Invalid credentials'}), 401
+# @routes.route('/<path:path>', methods=['GET'])
+# def static(path):
+#     return send_from_directory('../frontend/public', path)
+
+
+@routes.route('/register', methods=['POST'])
+def register():
+    username = request.json.get('username')
+    password = request.json.get('password')
+
+    if not username or not password:
+        return jsonify({'message': 'Username and password are required'}), 400
+
+    connection = get_db_connection()
+
+    if not connection:
+        return jsonify({'message': 'Database connection failed'}), 503
+
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        table_name = 'users_info'
+        # Check if the account already exists
+        cursor.execute(f'SELECT * FROM {table_name} WHERE user_name = ?', (username,))
+        account = cursor.fetchone()
+
+        if account:
+            msg = 'Account already exists!'
+        elif not re.match(r'[A-Za-z0-9]+', username):
+            msg = 'Username must contain only letters and numbers!'
+        elif not username or not password:
+            msg = 'Please fill out the form!'
+        else:
+            # Hash the password before storing it
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            cursor.execute(f'INSERT INTO {table_name} (user_name, password) VALUES (?, ?)',
+                           (username, hashed_password.decode('utf-8')))
+            connection.commit()
+            msg = 'You have successfully registered!'
+    except mariadb.Error as e:
+        print(f"Error querying database: {e}")
+        return jsonify({'message': 'Database error occurred'}), 503
+    finally:
+        cursor.close()
+        connection.close()
+
+    return jsonify({'message': msg}), 201
+
+
+@routes.route('/login', methods=['POST'])
+def login():
+    username = request.json.get('username')
+    password = request.json.get('password')
+
+    if not username or not password:
+        return jsonify({'message': 'Username and password are required'}), 400
+
+    connection = get_db_connection()
+
+    if not connection:
+        return jsonify({'message': 'Database connection failed'}), 503
+
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        table_name = 'users_info'
+        cursor.execute(f'SELECT * FROM {table_name} WHERE user_name = ?', (username,))
+        account = cursor.fetchone()
+    except mariadb.Error as e:
+        print(f"Error querying database: {e}")
+        account = None
+    finally:
+        cursor.close()
+        connection.close()
+
+    if account:
+        # Verify the password using bcrypt
+        if bcrypt.checkpw(password.encode('utf-8'), account['password'].encode('utf-8')):
+            msg = 'Logged in successfully!'
+        else:
+            return jsonify({'message': 'Incorrect username/password!'}), 401
+    else:
+        return jsonify({'message': 'Incorrect username/password!'}), 401
+
+    return jsonify({'message': msg}), 201
 
 
 # @routes.route('/courses', methods=['GET'])
